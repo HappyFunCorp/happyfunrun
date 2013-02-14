@@ -7,11 +7,11 @@ require "happyfunrun/version"
 Gem::Specification.new do |s|
   s.name        = "happyfunrun"
   s.version     = Happyfunrun::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Happyfunrun."
-  s.description = "TODO: Description of Happyfunrun."
+  s.authors     = ["Ricky Reusser"]
+  s.email       = ["ricky@happyfuncorp.com"]
+  s.homepage    = "http://happyfunrun.com"
+  s.summary     = "Summary of Happyfunrun."
+  s.description = "Description of Happyfunrun."
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
