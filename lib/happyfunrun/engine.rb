@@ -7,7 +7,7 @@ module Happyfunrun
 	mattr_accessor :key
 	@@key = ''
 
-	def self.track_value_of(model_scope_or_proc, optiosn={})
+	def self.track_value_of(model_scope_or_proc, options={})
 		@@models << Subject.new(model_scope_or_proc, options)
 	end
 

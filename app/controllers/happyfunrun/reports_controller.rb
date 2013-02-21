@@ -1,10 +1,10 @@
-class Happyfunrun::StatsController < ApplicationController
+class Happyfunrun::ReportsController < ApplicationController
 	
 	before_filter :verify_key
 
-	def index
+	def summary
 		begin
-			render :json=>Happyfunrun::models.collect{|x| x.statistics(:since=>params[:since])}.inject { | a, h | a.merge h }
+			render :json=>Happyfunrun::models.collect{|x| x.reports(:since=>params[:since])}.inject { | a, h | a.merge h }
 		rescue StandardError => e
 			render :json=>{:error=>e.message}
 		end
