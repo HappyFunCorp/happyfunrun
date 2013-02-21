@@ -15,7 +15,7 @@ class Happyfunrun::ReportsController < ApplicationController
 		
 		# Not exactly secure, but it's better than nothing:
 		def verify_key
-			redirect_to root_path unless Happyfunrun::key == params[:key]
+			redirect_to root_path unless (Happyfunrun::app_id==params[:app_id] and Happyfunrun::app_secret==params[:app_secret])
 		end
 	
 end
