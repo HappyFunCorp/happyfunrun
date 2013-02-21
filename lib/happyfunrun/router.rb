@@ -1,32 +1,38 @@
 module ActionDispatch::Routing
 	class Mapper
 
-		class HappyfunrunMapper
 
-			def initialize(mapper)
+		# The only helper exposed to happyfunrun
+		def happyfunrun(options={}, &block)
+			HappyfunrunMapper.new(self,options,&block)
+		end
+
+
+		# Scope helper methods within HappyfunrunMapper to avoid name collisions
+		class HappyfunrunMapper
+			
+			def initialize(mapper,options={},&block)
 				@mapper = mapper
-				block.call
+
+				options.reverse_merge!({})
+
+				self.instance_eval(&block)
 			end
 
-			def reports(options={})
-				options.reverse_merge!( {:at=>'stats'} )
-				namespace :happyfunrun do
-					get options[:at] => 'stats#index'
+			def reports
+				@mapper.namespace :happyfunrun do
+					@mapper.get 'reports' => 'reports#feed'
+					@mapper.get 'metadata' => 'reports#metadata'
 				end
 			end
 
 			def newsletters
-				namespace :happyfunrun do
-					resources :newsletters, :only=>[:new, :create]
+				@mapper.namespace :happyfunrun do
+					@mapper.resources :newsletters, :only=>[:new, :create]
 				end
 			end
 		end
 
-
-		def happyfunrun(&block)
-			HappyfunrunMapper.new(self)
-			block.call
-		end
 
 	end
 

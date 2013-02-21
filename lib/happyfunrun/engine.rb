@@ -23,6 +23,15 @@ module Happyfunrun
 		end
 	end
 
+	def self.metadata(request)
+		_url = "#{request.protocol}#{request.host_with_port}"
+		{
+			:app_id => @@app_id,
+			:description => "<a href=\"#{_url}\">#{_url}</a>",
+			:app_name => Rails.application.class.parent_name
+		}
+	end
+
 	class Engine < Rails::Engine
 
 	end
