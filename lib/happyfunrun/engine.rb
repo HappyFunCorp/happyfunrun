@@ -31,8 +31,8 @@ module Happyfunrun
 		_url = "#{request.protocol}#{request.host_with_port}"
 		{
 			:app_id => @@app_id,
-			:app_name => Rails.application.class.parent_name
-			:host => "<a href=\"#{_url}\">#{_url}</a>",
+			:app_name => Rails.application.class.parent_name,
+			:host => "<a href=\"#{_url}\">#{_url}</a>"
 		}.merge( Happyfunrun::Subject.metadata )
 	end
 
