@@ -4,8 +4,8 @@ class Happyfunrun::ReportsController < ApplicationController
 
 	def feed
 		begin
-			render :json=>Happyfunrun::models.collect{|x| x.reports(:since=>params[:since])}.inject { | a, h | a.merge h }.merge({:status=>'200'})
-		rescue StandardError => e
+			render :json=> Happyfunrun::Subject.compile(:since=>params[:since]).merge({:status=>'200'})
+		rescue handled_exceptions => e
 			render :json=>{:status=>'301', :error=>e.message}
 		end
 	end
@@ -13,7 +13,7 @@ class Happyfunrun::ReportsController < ApplicationController
 	def metadata
 		begin
 			render :json=>Happyfunrun.metadata(request).merge({:status=>'200'})
-		rescue StandardError => e
+		rescue handled_exceptions => e
 			render :json=>{:status=>'301', :error=>e.message}
 		end
 	end
@@ -21,11 +21,19 @@ class Happyfunrun::ReportsController < ApplicationController
 
 	private
 		
-		# Not exactly secure, but it's better than nothing:
+		# Not at all secure, but it's better than nothing:
 		def verify_key
 			unless (Happyfunrun::app_id==params[:app_id] and Happyfunrun::app_secret==params[:app_secret])
 				render :json=>{:status=>'300', :error=>'Access Denied'}
 				return
+			end
+		end
+
+		def handled_exceptions
+			if Happyfunrun.debug_mode
+				[StandardError]
+			else
+				[]
 			end
 		end
 	

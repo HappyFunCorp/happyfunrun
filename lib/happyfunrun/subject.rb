@@ -2,6 +2,28 @@ module Happyfunrun
 	
 	class Subject
 
+		class << self
+
+			def compile(options={})
+				options.reverse_merge!({:since=>nil})
+				since = options[:since]
+				Happyfunrun::subjects.collect{|subject|
+					{
+						subject.name => {
+							:value => subject.value(:since=>since),
+							:since => since
+						}
+					}
+				}.inject { | a, h | a.merge h }
+			end
+
+			def metadata(options={})
+				options.reverse_merge!({})
+				{:fields=> Happyfunrun::subjects.collect{|subject| subject.name}}
+			end
+
+		end
+
 		attr_accessor :model, :scope, :name, :date_column, :lambda
 		
 		def initialize(model_scope_or_proc, options={})
@@ -52,7 +74,7 @@ module Happyfunrun
 
 			if self.is_lambda?
 
-				_result = @lambda.call(options[:since])
+				_result = @lambda.call(Time.at(options[:since].to_i))
 
 			else
 
