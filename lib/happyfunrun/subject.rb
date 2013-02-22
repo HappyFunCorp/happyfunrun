@@ -26,33 +26,41 @@ module Happyfunrun
 
 		attr_accessor :model, :scope, :name, :date_column, :lambda
 		
-		def initialize(model_scope_or_proc, options={})
+		def initialize(name, *options)
+			_opts = {}
 
-			if model_scope_or_proc.is_a? Proc
-				@lambda = model_scope_or_proc
+			@name = name.to_sym
 
-			elsif model_scope_or_proc.is_a? Symbol
-				@model = model_scope_or_proc.to_s.classify.constantize
-				@scope = @model.scoped
-
-			elsif model_scope_or_proc < ActiveRecord::Base
-				@model = model_scope_or_proc
-				@scope = @model.scoped
-
-			elsif model_scope_or_proc.is_a? ActiveRecord::Relation
-				@model = model_scope_or_proc.klass
-				@scope = model_scope_or_proc
-
+			begin
+				@scope = name.to_s.classify.constantize.scoped
+			rescue NameError
 			end
 
-			options.reverse_merge!({
-				:as=>@model.to_s.underscore.pluralize,
+			if options.length > 1
+				_opts = options[1] if options[1].is_a? Hash
+
+			elsif options.length > 0
+				
+				if options[0].is_a? Hash
+					_opts = options[0]
+
+				elsif options[0].is_a? Proc
+					@lambda = options[0]
+
+				elsif options[0].is_a? ActiveRecord::Relation
+					@scope = options[0]
+
+				elsif options[0] < ActiveRecord::Base
+					@scope = options[0].scoped
+
+				end
+			end
+
+			_opts.reverse_merge!({
 				:date_column => 'created_at',
 			})
 
-			@name = options[:as]
-
-			@date_column = options[:date_column]
+			@date_column = _opts[:date_column]
 			
 		end
 
@@ -84,7 +92,7 @@ module Happyfunrun
 					_since = Time.at(options[:since].to_i)
 				
 					# Sanitize the column name:
-					unless @model.column_names.include? @date_column
+					unless @scope.klass.column_names.include? @date_column
 						raise StandardError.new("CrappyConfigError: Invalid column name '#{@date_column}' for table '#{@model}'.")
 					end
 
