@@ -23,7 +23,7 @@ class Happyfunrun::ReportsController < ApplicationController
 		
 		# Not at all secure, but it's better than nothing:
 		def verify_key
-			unless (Happyfunrun::app_id==params[:app_id] and Happyfunrun::app_secret==params[:app_secret])
+			unless (Happyfunrun::app_id==params[:app_id] and Happyfunrun::api_key==params[:api_key])
 				render :json=>{:status=>'300', :error=>'Access Denied'}
 				return
 			end
