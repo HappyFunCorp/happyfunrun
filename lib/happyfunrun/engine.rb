@@ -13,7 +13,7 @@ module Happyfunrun
 	@@api_key = ''
 
 	def self.track_value_of(model_scope_or_proc, options={})
-		@@subjects << Subject.new(model_scope_or_proc, options)
+		@@subjects << Subject.new(name, model_scope_or_proc, options)
 	end
 
 	def self.setup

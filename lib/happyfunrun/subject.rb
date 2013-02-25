@@ -26,34 +26,20 @@ module Happyfunrun
 
 		attr_accessor :model, :scope, :name, :date_column, :lambda
 		
-		def initialize(name, *options)
+		def initialize(name, model_scope_or_proc, *options)
 			_opts = {}
 
-			@name = name.to_sym
+			@name = name
 
-			begin
-				@scope = name.to_s.classify.constantize.scoped
-			rescue NameError
-			end
+			if model_scope_or_proc.is_a? Proc
+				@lambda = model_scope_or_proc
 
-			if options.length > 1
-				_opts = options[1] if options[1].is_a? Hash
+			elsif model_scope_or_proc.is_a? ActiveRecord::Relation
+				@scope = model_scope_or_proc
 
-			elsif options.length > 0
-				
-				if options[0].is_a? Hash
-					_opts = options[0]
+			elsif model_scope_or_proc < ActiveRecord::Base
+				@scope = model_scope_or_proc.scoped
 
-				elsif options[0].is_a? Proc
-					@lambda = options[0]
-
-				elsif options[0].is_a? ActiveRecord::Relation
-					@scope = options[0]
-
-				elsif options[0] < ActiveRecord::Base
-					@scope = options[0].scoped
-
-				end
 			end
 
 			_opts.reverse_merge!({
