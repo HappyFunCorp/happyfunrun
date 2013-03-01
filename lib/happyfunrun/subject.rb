@@ -5,13 +5,15 @@ module Happyfunrun
 		class << self
 
 			def compile(options={})
-				options.reverse_merge!({:since=>nil})
-				since = options[:since]
+				options.reverse_merge!({:begin=>nil, :end=>nil})
+				_begin = options[:begin]
+				_end = options[:end]
 				Happyfunrun::subjects.collect{|subject|
 					{
 						subject.name => {
-							:value => subject.value(:since=>since),
-							:since => since
+							:value => subject.value(:begin=>_begin, :end=>_end),
+							:begin => _begin,
+							:end   => _end
 						}
 					}
 				}.inject { | a, h | a.merge h }
@@ -64,30 +66,42 @@ module Happyfunrun
 
 
 		def value(options={})
-			options.reverse_merge!({:since=>nil})
+			options.reverse_merge!({:begin=>nil, :end=>nil})
+			_begin = options[:begin].nil? ? nil : (Time.zone.at(options[:begin].to_i) rescue nil)
+			_end = options[:end].nil? ? nil : (Time.zone.at(options[:end].to_i) rescue nil)
 
 			if self.is_lambda?
 
-				_result = @lambda.call(Time.at(options[:since].to_i))
+				# This is a little strange:
+				if _begin.nil? and !_end.nil?
+					_begin ||= Time.zone.at(0)
+				elsif !_begin.nil? and _end.nil?
+					_end ||= Time.zone.now
+				end
+
+				_result = @lambda.call(_begin.._end)
 
 			else
 
-				if options[:since].nil?
+				if _begin.nil? and _end.nil?
 					_result = @scope.count
 				else
-					_since = Time.at(options[:since].to_i)
-				
+
 					# Sanitize the column name:
 					unless @scope.klass.column_names.include? @date_column
 						raise StandardError.new("CrappyConfigError: Invalid column name '#{@date_column}' for table '#{@model}'.")
 					end
 
-					_result = @scope.where("#{@date_column} > ?",_since).count
+					if _begin.nil?
+						_result = @scope.where("#{@date_column} < ?", _end).count
+					elsif _end.nil?
+						_result = @scope.where("#{@date_column} > ?", _begin).count
+					else
+						_result = @scope.where(@date_column => _begin.._end).count
+					end
 
 				end
-
 			end
-
 		end
 
 =begin

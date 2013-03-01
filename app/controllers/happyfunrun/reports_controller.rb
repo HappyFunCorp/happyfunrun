@@ -4,7 +4,7 @@ class Happyfunrun::ReportsController < ApplicationController
 
 	def feed
 		begin
-			render :json=> {:report=>Happyfunrun::Subject.compile(:since=>params[:since])}.merge({:status=>'200'})
+			render :json=> {:statistics=>Happyfunrun::Subject.compile(:begin=>params[:begin], :end=>params[:end])}.merge({:status=>'200'})
 		rescue handled_exceptions => e
 			render :json=>{:status=>'301', :error=>e.message}
 		end
