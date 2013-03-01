@@ -4,7 +4,7 @@ class Happyfunrun::ReportsController < ApplicationController
 
 	def feed
 		begin
-			render :json=> Happyfunrun::Subject.compile(:since=>params[:since]).merge({:status=>'200'})
+			render :json=> {:report=>Happyfunrun::Subject.compile(:since=>params[:since])}.merge({:status=>'200'})
 		rescue handled_exceptions => e
 			render :json=>{:status=>'301', :error=>e.message}
 		end
@@ -12,7 +12,7 @@ class Happyfunrun::ReportsController < ApplicationController
 
 	def metadata
 		begin
-			render :json=>Happyfunrun.metadata(request).merge({:status=>'200'})
+			render :json=>{:metadata=>Happyfunrun.metadata(request)}.merge({:status=>'200'})
 		rescue handled_exceptions => e
 			render :json=>{:status=>'301', :error=>e.message}
 		end
